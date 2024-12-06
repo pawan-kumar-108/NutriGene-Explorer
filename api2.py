@@ -279,10 +279,7 @@ def generate_visualization():
         plt.savefig(plot_path)
         plt.close()
         
-        return jsonify({
-            "plot_path": plot_path,
-            "message": "Visualization generated successfully"
-        }), 200
+        return send_file(plot_path, mimetype='image/png')
     
     except Exception as e:
         logging.error(f"Visualization error: {e}")
