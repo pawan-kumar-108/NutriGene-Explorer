@@ -118,13 +118,17 @@ def predict_nutrient_impact():
     Predict how specific nutrient levels impact gene expression
     """
     try:
-        # Check if file is uploaded
+
         if 'file' not in request.files:
             return jsonify({"error": "No training data uploaded"}), 400
         
-        # Load training data
+        # Save the uploaded file temporarily
         file = request.files['file']
-        df = pd.read_csv(file)
+        filename = os.path.join(UPLOAD_FOLDER, file.filename)
+        file.save(filename)
+        
+        # Load training data
+        df = pd.read_csv(filename)
         
         # Get prediction parameters
         nutrient_columns = request.form.get('nutrient_columns', 'Vitamin_A,Vitamin_D').split(',')
@@ -252,9 +256,20 @@ def generate_visualization():
     Generate advanced visualizations
     """
     try:
-        file = request.files['file']
-        df = load_data(file)
+        #file = request.files['file']
+        #df = load_data(file)
+        if 'file' not in request.files:
+            return jsonify({"error": "No training data uploaded"}), 400
         
+        # Save the uploaded file temporarily
+        file = request.files['file']
+        filename = os.path.join(UPLOAD_FOLDER, file.filename)
+        file.save(filename)
+        
+        # Load training data
+        df = pd.read_csv(filename)
+    
+
         viz_type = request.form.get('visualization_type', 'correlation_heatmap')
         nutrient_columns = request.form.get('nutrient_columns', 'Vitamin_A,Vitamin_D,Vitamin_E').split(',')
         gene_columns = request.form.get('gene_columns', 'BRCA1_Expression,TP53_Expression').split(',')
